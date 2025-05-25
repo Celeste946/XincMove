@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        // 检测是否为移动设备
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // 如果不是移动设备，重定向到提示页面
+        if (!isMobileDevice()) {
+            window.location.href = "desktop-notice.html";
+        }
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>班级网站</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#EC4899',
+                        accent: '#8B5CF6',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .nav-active {
+                border-bottom-width: 2px;
+                border-bottom-color: theme('colors.primary');
+                color: theme('colors.primary');
+            }
+            .mobile-full-width {
+                width: 100vw;
+                margin-left: calc(-50vw + 50%);
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-dark font-sans min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-sm">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-primary flex items-center">
+                    <i class="fa fa-users mr-2"></i>
+                    <span>班级空间</span>
+                </a>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menuBtn" class="text-dark focus:outline-none">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- 移动端导航菜单 -->
+            <div id="mobileMenu" class="hidden mt-4 pb-4">
+                <a href="#home" class="block py-2 font-medium hover:text-primary transition-colors nav-active">首页</a>
+                <a href="#gallery" class="block py-2 font-medium hover:text-primary transition-colors">班级相册</a>
+                <a href="#about" class="block py-2 font-medium hover:text-primary transition-colors">关于我们</a>
+                <a href="#donate" class="block py-2 font-medium hover:text-primary transition-colors">爱心捐赠</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow pt-16">
+        <!-- 英雄区域 - 带轮播图 -->
+        <section id="home" class="relative bg-gradient-to-br from-primary to-accent text-white py-20 md:py-32 mobile-full-width">
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute inset-0 bg-black/30 z-10"></div>
+                <!-- 轮播图容器 -->
+                <div id="heroCarousel" class="relative w-full h-full">
+                    <!-- 轮播图片 -->
+                    <div class="carousel-item absolute inset-0 opacity-100 transition-opacity duration-1000">
+                        <img data-src="https://picsum.photos/id/20/1920/1080" alt="班级合影1" class="w-full h-full object-cover" />
+                    </div>
+                    <div class="carousel-item absolute inset-0 opacity-0 transition-opacity duration-1000">
+                        <img data-src="https://picsum.photos/id/25/1920/1080" alt="班级合影2" class="w-full h-full object-cover" />
+                    </div>
+                    <div class="carousel-item absolute inset-0 opacity-0 transition-opacity duration-1000">
+                        <img data-src="https://picsum.photos/id/29/1920/1080" alt="班级合影3" class="w-full h-full object-cover" />
+                    </div>
+                    
+                    <!-- 轮播控制按钮 -->
+                    <button id="prevBtn" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <button id="nextBtn" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                    
+                    <!-- 轮播指示器 -->
+                    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+                        <button class="carousel-indicator w-3 h-3 rounded-full bg-white opacity-100"></button>
+                        <button class="carousel-indicator w-3 h-3 rounded-full bg-white opacity-50"></button>
+                        <button class="carousel-indicator w-3 h-3 rounded-full bg-white opacity-50"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 relative z-20 text-center">
+                <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold mb-6 text-shadow leading-tight">
+                    2023届<span class="text-secondary">追云十五</span>班
+                </h1>
+                <p class="text-[clamp(1rem,2vw,1.25rem)] max-w-2xl mx-auto mb-8 text-white/90">
+                    我们是一个充满活力和创造力的集体，一起学习，一起成长，一起创造美好回忆
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                    <a href="#gallery" class="bg-white text-primary hover:bg-primary/90 hover:text-white transition-colors px-8 py-3 rounded-full font-medium shadow-lg">
+                        浏览相册
+                    </a>
+                    <a href="#donate" class="bg-transparent border-2 border-white text-white hover:bg-white/10 transition-colors px-8 py-3 rounded-full font-medium">
+                        爱心捐赠
+                    </a>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-light to-transparent z-10"></div>
+        </section>
+
+        <!-- 班级相册 -->
+        <section id="gallery" class="py-16 bg-light mobile-full-width">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-dark mb-4">班级相册</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">记录我们的校园生活，留住每一个精彩瞬间</p>
+                </div>
+
+                <!-- 相册分类标签 -->
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button class="px-6 py-2 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors">全部</button>
+                    <button class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">班级活动</button>
+                    <button class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">学习生活</button>
+                    <button class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">比赛获奖</button>
+                    <button class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">社会实践</button>
+                </div>
+
+                <!-- 相册网格 -->
+                <div id="gallery-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 迎新活动 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover" data-aos="fade-up">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/4979a3f42279cf28bc44d6206c2024c6c35b1e1f19964fe4b3df3dbf57e6b9e2bc297e77b951d4d828511f8a57bef406?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1747665628960.jpg&size=750" alt="迎新活动" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">迎新活动</h3>
+                                    <p class="text-sm text-white/80">2025年5月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">开学第一天，我们相聚在这里，共同开启大学生活的新篇章</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 校园运动会 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover" data-aos="fade-up" data-aos-delay="100">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/048bbbfc3256b1a9da140a72d3ad45b4af09daea4e94074d6c236f525e5a574703af137d1462592e8d6000aeab83d691?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1747665616097.jpg&size=750" alt="校园运动会" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">校园运动会</h3>
+                                    <p class="text-sm text-white/80">2025年5月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">赛场上，我们挥洒汗水，为班级荣誉而战</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 编程竞赛 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover" data-aos="fade-up" data-aos-delay="200">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/f0649c2fe588749fe8c6abd88fdb7b0897201621152bd4c9df8f4f86d69b5df49d162c309c7b619e48a1f34f67b5bce7?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1741347208411.jpg&size=750" alt="篮球竞赛" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">篮球竞赛</h3>
+                                    <p class="text-sm text-white/80">2024年4月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">同学们发挥聪明才智，在编程竞赛中取得优异成绩</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 团建活动 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover" data-aos="fade-up" data-aos-delay="300">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/d57fc692f6c1b4ea75b49072fe97509983a3b8ec367fbba6baf7f8c829b2455c4789e8fa65d1774bc4af0551d8b818ca?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1747665554241.jpg&size=750" alt="团建活动" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">趣味活动</h3>
+                                    <p class="text-sm text-white/80">2025年5月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">春游踏青，增进同学情谊</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 志愿服务 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover" data-aos="fade-up" data-aos-delay="400">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/0536eecf093690e074af6f69e8aded09cb2c707995b0f406ac55be084421c682f08692e318a46ad48b091b2c6570fa79?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1747665589093.jpg&size=750" alt="零食抢夺" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">零食抢夺</h3>
+                                    <p class="text-sm text-white/80">2025年5月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">参与社区活动，激情争夺零食</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学术讲座 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover" data-aos="fade-up" data-aos-delay="500">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/4597154d71c0a4bd8ebe895167d9ed8c3f6e6af86c1f9663f4ccd1b9373c4387b0ba227abee54d2fe4390bd4f9323483?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1741347193729.jpg&size=750" alt="学术讲座" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">班级合照</h3>
+                                    <p class="text-sm text-white/80">2024年6月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">与所有同学合照留念</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 额外照片（初始隐藏） -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover hidden more-photos" data-aos="fade-up">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/e2e565958abcc25707ceee20daae74d72bf9c8ab7e5905ef10718dbd0e216a419e4ce504cf66449313e401fa581fc312?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1748136951049.jpg&size=750" alt="同学投稿" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">同学投稿</h3>
+                                    <p class="text-sm text-white/80">2025年5月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">好帅帅啊</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover hidden more-photos" data-aos="fade-up">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/8e58981d9c7f08f9974aea4db358582ece7ffa8920b17a281417c3763f56ee47ba93d059ad161a2fb8798b664abb0606?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1742579643950.jpg&size=750" alt="生地倒计时" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">百日誓师</h3>
+                                    <p class="text-sm text-white/80">2025年3月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">班级聚餐，促进学习氛围</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover hidden more-photos" data-aos="fade-up">
+                        <div class="relative h-60 overflow-hidden group">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/c871983e58c7fd4569f06e1784fc31fb050eabf47f3d646b12044d71347669e499aa5f0029e8e6780ab93d62cd939739?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1746150596142.jpg&size=750" alt="班级颁奖" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                    <h3 class="font-bold text-xl">颁奖时刻</h3>
+                                    <p class="text-sm text-white/80">2025年5月</p>
+                                    <p class="mt-2 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">班级排名颁奖现场</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10">
+                    <button id="load-more-photos" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-full font-medium shadow-md transition-colors">
+                        查看更多照片
+                    </button>
+                </div>
+
+                <script>
+                    document.getElementById('load-more-photos').addEventListener('click', function() {
+                        // 获取所有隐藏的照片元素
+                        const hiddenPhotos = document.querySelectorAll('.more-photos');
+                        
+                        // 显示所有隐藏的照片
+                        hiddenPhotos.forEach(photo => {
+                            photo.classList.remove('hidden');
+                            // 触发AOS动画
+                            AOS.refresh();
+                        });
+                        
+                        // 隐藏"查看更多"按钮
+                        this.style.display = 'none';
+                    });
+                </script>
+            </div>
+        </section>
+
+        <!-- 关于我们 -->
+        <section id="about" class="py-16 bg-gray-50 mobile-full-width">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12" data-aos="fade-up">
+                    <h2 class="text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-dark mb-4">关于我们</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">了解我们班级的故事和成长历程</p>
+                </div>
+
+                <div class="space-y-12">
+                    <div data-aos="fade-up">
+                        <h3 class="text-2xl font-bold text-dark mb-6">班级简介</h3>
+                        <p class="text-gray-600 mb-4">
+                            我们班级成立于2023年9月，由来自全国各地的46名同学组成。大家怀着对计算机科学的热爱，相聚在这所大学，共同追求知识和梦想。
+                        </p>
+                        <p class="text-gray-600 mb-4">
+                            在过去的一年里，我们一起经历了许多难忘的时刻，有欢笑，有汗水，也有成长。我们不仅在学业上互相帮助，共同进步，还积极参与各种校园活动和社会实践，锻炼自己的综合能力。
+                        </p>
+                        <div class="mt-8 grid grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="100">
+                                <div class="text-primary text-3xl font-bold mb-1 counter" data-target="50">0</div>
+                                <div class="text-gray-600">班级成员</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="200">
+                                <div class="text-primary text-3xl font-bold mb-1 counter" data-target="12">0</div>
+                                <div class="text-gray-600">班级活动</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="300">
+                                <div class="text-primary text-3xl font-bold mb-1 counter" data-target="85">0</div>
+                                <div class="text-gray-600">获奖比例</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="400">
+                                <div class="text-primary text-3xl font-bold mb-1 counter" data-target="98">0</div>
+                                <div class="text-gray-600">通过率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative" data-aos="fade-up" data-aos-delay="200">
+                        <div class="bg-primary/10 rounded-2xl p-2">
+                            <img data-src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/ac4d50fe451f1b9324ab6dbb861a592acc2b2d54161a52c99375f7126e9f1192a202214cd4444616a94faff092e1d27d?pictype=scale&from=30113&version=3.3.3.3&fname=mmexport1741792491098.jpg&size=750" alt="班级合影" class="w-full h-auto rounded-xl shadow-lg" />
+                        </div>
+                        <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg max-w-xs" data-aos="fade-right" data-aos-delay="400">
+                            <div class="flex items-center mb-2">
+                                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </div>
+                                <h4 class="ml-3 font-bold text-dark">优秀班集体</h4>
+                            </div>
+                            <p class="text-gray-600 text-sm">在2023-2024学年中，荣获校级"优秀班集体"称号</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 班级发展历程 -->
+                <div class="mt-20" data-aos="fade-up">
+                    <h3 class="text-2xl font-bold text-dark mb-10 text-center">班级发展历程</h3>
+                    <div class="space-y-8">
+                        <!-- 时间点1 -->
+                        <div class="relative" data-aos="fade-right">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-4">
+                                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="bg-white p-6 rounded-xl shadow-md">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-bold text-lg text-dark">班级成立</h4>
+                                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">2023年9月</span>
+                                        </div>
+                                        <p class="text-gray-600">我们来自五湖四海，相聚在这里，共同开启大学生活的新篇章</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间点2 -->
+                        <div class="relative" data-aos="fade-right" data-aos-delay="100">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-4">
+                                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="bg-white p-6 rounded-xl shadow-md">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-bold text-lg text-dark">第一次班级活动</h4>
+                                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">2023年10月</span>
+                                        </div>
+                                        <p class="text-gray-600">组织班级活动，增进同学之间的了解和友谊</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间点3 -->
+                        <div class="relative" data-aos="fade-right" data-aos-delay="200">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-4">
+                                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="bg-white p-6 rounded-xl shadow-md">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-bold text-lg text-dark">校园科技节</h4>
+                                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">2024年3月</span>
+                                        </div>
+                                        <p class="text-gray-600">同学们积极参与，展示自己的科技作品和创新成果</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间点4 -->
+                        <div class="relative" data-aos="fade-right" data-aos-delay="300">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-4">
+                                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="bg-white p-6 rounded-xl shadow-md">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-bold text-lg text-dark">期中考试总结</h4>
+                                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">2024年4月</span>
+                                        </div>
+                                        <p class="text-gray-600">总结半学期的学习情况，制定下一阶段的学习计划</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我们 -->
+        <section id="contact" class="py-16 bg-white mobile-full-width">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12" data-aos="fade-up">
+                    <h2 class="text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-dark mb-4">联系我们</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">如果您有任何问题或建议，请随时与我们联系</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-light p-8 rounded-xl shadow-sm" data-aos="fade-right">
+                        <h3 class="text-xl font-bold text-dark mb-6">联系方式</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start" data-aos="fade-up" data-aos-delay="100">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                                    <i class="fa fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-dark">电子邮箱</h4>
+                                    <p class="text-gray-600">1990939838@qq.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start" data-aos="fade-up" data-aos-delay="200">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                                    <i class="fa fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-dark">联系电话</h4>
+                                    <p class="text-gray-600">+86 189 26 845 117</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start" data-aos="fade-up" data-aos-delay="300">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                                    <i class="fa fa-map-marker"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-dark">地址</h4>
+                                    <p class="text-gray-600">广东省东莞市常平镇新城学校</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start" data-aos="fade-up" data-aos-delay="400">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                                    <i class="fa fa-wechat"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-dark">微信添加好友</h4>
+                                    <p class="text-gray-600">扫描二维码关注我们</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 flex space-x-4" data-aos="fade-up" data-aos-delay="500">
+                            <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                <i class="fa fa-weibo"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                <i class="fa fa-wechat"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                <i class="fa fa-qq"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-100 p-8 rounded-xl shadow-sm" data-aos="fade-left">
+                        <h3 class="text-xl font-bold text-dark mb-6">最新班级公告</h3>
+                        
+                        <div class="space-y-6">
+                            <!-- 公告1 -->
+                            <div class="border-b border-gray-100 pb-4" data-aos="fade-up" data-aos-delay="100">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-dark">生地3模安排通知</h4>
+                                    <span class="text-xs text-gray-500">2025-05-26</span>
+                                </div>
+                                <p class="text-gray-600 text-sm">本学期最后一次生地模拟考试将于5月26日开始，请同学们提前做好准备...</p>
+                            </div>
+                            
+                            <!-- 公告2 -->
+                            <div class="border-b border-gray-100 pb-4" data-aos="fade-up" data-aos-delay="200">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-dark">生地中考</h4>
+                                    <span class="text-xs text-gray-500">2026-06-30</span>
+                                </div>
+                                <p class="text-gray-600 text-sm">时间还剩30多天，各位做好准备！</p>
+                            </div>
+                            
+                            <!-- 公告3 -->
+                            <div class="border-b border-gray-100 pb-4" data-aos="fade-up" data-aos-delay="300">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-dark">班级趣味运动活动</h4>
+                                    <span class="text-xs text-gray-500">2025-05-8</span>
+                                </div>
+                                <p class="text-gray-600 text-sm">计划于5月初组织班级趣味运动活动，地点待定，欢迎大家提出建议...</p>
+                            </div>
+                            
+                            <!-- 查看更多按钮 -->
+                            <div data-aos="fade-up" data-aos-delay="400">
+                                <button onclick="getMoreNotice()" class="w-full bg-gray-100 hover:bg-gray-200 text-dark py-3 rounded-lg font-medium transition-colors">
+                                    查看更多公告
+                                    <script>
+                                        function getMoreNotice() {
+                                            alert("已经到底了");
+                                        }
+                                    </script>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 爱心捐赠 -->
+        <section id="donate" class="py-16 bg-gray-50 mobile-full-width">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12" data-aos="fade-up">
+                    <h2 class="text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-dark mb-4">爱心捐赠</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">您的每一份爱心都将助力班级发展，共同创造更美好的未来</p>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- 捐赠卡片 -->
+                    <div>
+                        <div class="bg-white rounded-xl p-8 border border-gray-100 shadow-md">
+                            <h3 class="text-xl font-bold text-dark mb-6">捐赠支持</h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <p class="text-gray-600 mb-4">感谢您对我们班级的支持和帮助</p>
+                                    <p class="text-gray-600">请扫描下方二维码进行捐赠</p>
+                                </div>
+                                
+                                <div class="flex justify-center">
+                                    <div class="bg-white p-4 rounded-lg shadow-md">
+                                        <img src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/128bba0ebd0006b83afd8103716399bacfb77d4eaf842af97f169b388efad4a1d965d31acba37c9b4dac80eb7ca66a96?pictype=scale&from=30113&version=3.3.3.3&fname=mm_facetoface_collect_qrcode_1748136922252.png&size=750" alt="捐赠二维码" class="w-69 h-69 object-contain">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 捐赠统计 -->
+                    <div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-md">
+                            <h3 class="text-xl font-bold text-dark mb-6">捐赠统计</h3>
+                            
+                            <div class="mb-6">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-700">目标金额</span>
+                                    <span class="font-bold text-primary">¥200</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-primary h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-500">已筹集: ¥0 (0%)</div>
+                            </div>
+                            
+                            <div class="text-center py-8 mb-6">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fa fa-heart-o text-gray-400 text-2xl"></i>
+                                </div>
+                                <p class="text-gray-500 mb-2">目前还没有人进行捐赠</p>
+                                <p class="text-gray-400 text-sm">成为第一个支持我们班级的人吧！</p>
+                            </div>
+                            
+                            <canvas id="donationChart" width="100%" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12 mobile-full-width">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-users mr-2"></i>
+                        <span>班级空间</span>
+                    </h3>
+                    <p class="text-gray-400 mb-4">
+                        记录我们的校园生活，留住每一个精彩瞬间
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-qq text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-github text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#gallery" class="text-gray-400 hover:text-white transition-colors">班级相册</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+                        <li><a href="#donate" class="text-gray-400 hover:text-white transition-colors">爱心捐赠</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">联系我们</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">东莞市常平镇新城学校</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope mt-1 mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">1990939838@qq.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone mt-1 mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">+86 189 2684 5117</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">订阅更新</h3>
+                    <p class="text-gray-400 mb-4">订阅我们的通讯，获取班级最新动态</p>
+                    <form class="flex">
+                        <input type="email" placeholder="您的邮箱地址" class="px-4 py-2 rounded-l-lg focus:outline-none w-full text-dark" />
+                        <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                            订阅
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
+                <p>&copy; 2025 2023届追云十五班. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 检测是否为微信浏览器
+        function isWeixinBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf('micromessenger') !== -1;
+        }
+        
+        // 检测是否为移动端
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检测浏览器环境
+            const isWeixin = isWeixinBrowser();
+            const isMobile = isMobileDevice();
+            
+            // 如果是移动端，修改赞助部分显示收款码
+            if (isMobile) {
+                const donateSection = document.getElementById('donate');
+                if (donateSection) {
+                    const donateContent = donateSection.querySelector('.container');
+                    if (donateContent) {
+                        donateContent.innerHTML = `
+                            <div class="text-center mb-12">
+                                <h2 class="text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-dark mb-4">爱心捐赠</h2>
+                                <p class="text-gray-600 max-w-2xl mx-auto">感谢您对我们班级的支持和帮助</p>
+                            </div>
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-lg max-w-sm mx-auto">
+                                    <div class="relative">
+                                        <img src="https://picsum.photos/id/237/300/300" alt="收款码" class="w-full h-auto rounded-lg mb-4">
+                                        <div class="absolute -top-3 -right-3 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg">
+                                            <i class="fa fa-qrcode"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-center text-gray-600 font-medium">扫描上方二维码进行赞助</p>
+                                    <div class="flex justify-center space-x-4 mt-4">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm">
+                                            <i class="fa fa-weixin mr-1"></i> 微信支付
+                                        </span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm">
+                                            <i class="fa fa-credit-card mr-1"></i> 支付宝
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="mt-6 text-center text-gray-500 max-w-md mx-auto">
+                                    您的每一笔捐款都将用于班级活动、学习资源和帮助等方面，为班级发展贡献一份力量。
+                                </p>
+                            </div>
+                        `;
+                    }
+                }
+            }
+            
+            // 如果是微信浏览器，可以添加微信特定的功能或提示
+            if (isWeixin) {
+                // 创建微信浏览器提示元素
+                const weixinTip = document.createElement('div');
+                weixinTip.className = 'fixed top-0 left-0 right-0 bg-green-500 text-white py-2 text-center z-50';
+                weixinTip.innerHTML = '您正在使用微信浏览器浏览本网站';
+                document.body.prepend(weixinTip);
+                
+                // 调整页面顶部内边距，避免内容被提示遮挡
+                document.querySelector('main').style.paddingTop = '4rem';
+            }
+            
+            // 轮播图功能实现
+            const heroCarousel = document.getElementById('heroCarousel');
+            if (heroCarousel) {
+                const carouselItems = heroCarousel.querySelectorAll('.carousel-item');
+                const indicators = heroCarousel.querySelectorAll('.carousel-indicator');
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                
+                let currentIndex = 0;
+                const totalItems = carouselItems.length;
+                
+                // 显示指定索引的轮播项
+                function showSlide(index) {
+                    // 处理索引边界
+                    if (index < 0) index = totalItems - 1;
+                    if (index >= totalItems) index = 0;
+                    
+                    // 更新当前索引
+                    currentIndex = index;
+                    
+                    // 更新轮播项显示状态
+                    carouselItems.forEach((item, i) => {
+                        item.style.opacity = i === currentIndex ? '1' : '0';
+                    });
+                    
+                    // 更新指示器状态
+                    indicators.forEach((indicator, i) => {
+                        indicator.style.opacity = i === currentIndex ? '1' : '0.5';
+                    });
+                }
+                
+                // 下一张
+                function nextSlide() {
+                    showSlide(currentIndex + 1);
+                }
+                
+                // 上一张
+                function prevSlide() {
+                    showSlide(currentIndex - 1);
+                }
+                
+                // 绑定按钮事件
+                if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+                if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+                
+                // 绑定指示器点击事件
+                indicators.forEach((indicator, i) => {
+                    indicator.addEventListener('click', () => showSlide(i));
+                });
+                
+                // 自动轮播
+                let autoplayInterval = setInterval(nextSlide, 5000);
+                
+                // 鼠标悬停时暂停自动轮播
+                heroCarousel.addEventListener('mouseenter', () => {
+                    clearInterval(autoplayInterval);
+                });
+                
+                // 鼠标离开时恢复自动轮播
+                heroCarousel.addEventListener('mouseleave', () => {
+                    autoplayInterval = setInterval(nextSlide, 5000);
+                });
+            }
+            
+            // 为相册图片添加点击预览功能
+            const galleryImages = document.querySelectorAll('#gallery .relative img');
+            galleryImages.forEach(img => {
+                img.style.cursor = 'pointer';
+                img.addEventListener('click', function() {
+                    // 创建遮罩层
+                    const overlay = document.createElement('div');
+                    overlay.className = 'fixed inset-0 bg-black/90 z-[100] flex items-center justify-center';
+                    
+                    // 创建大图容器
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'relative max-w-4xl w-full mx-4';
+                    
+                    // 创建大图
+                    const largeImg = document.createElement('img');
+                    largeImg.src = this.src.replace('/800/600', '/1200/900'); // 尝试获取更大的图片
+                    largeImg.alt = this.alt;
+                    largeImg.className = 'w-full h-auto rounded-lg';
+                    
+                    // 创建关闭按钮
+                    const closeBtn = document.createElement('button');
+                    closeBtn.className = 'absolute -top-12 right-0 text-white text-3xl';
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.addEventListener('click', () => overlay.remove());
+                    
+                    // 创建图片标题
+                    const title = document.createElement('div');
+                    title.className = 'absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4 rounded-b-lg';
+                    title.textContent = this.alt;
+                    
+                    // 组装元素
+                    imgContainer.appendChild(largeImg);
+                    imgContainer.appendChild(closeBtn);
+                    imgContainer.appendChild(title);
+                    overlay.appendChild(imgContainer);
+                    
+                    // 添加到页面
+                    document.body.appendChild(overlay);
+                    
+                    // 点击遮罩层关闭
+                    overlay.addEventListener('click', function(e) {
+                        if (e.target === overlay) {
+                            overlay.remove();
+                        }
+                    });
+                });
+            });
+        });
+
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow-md');
+                navbar.classList.remove('py-3', 'shadow-sm');
+            } else {
+                navbar.classList.add('py-3', 'shadow-sm');
+                navbar.classList.remove('py-2', 'shadow-md');
+            }
+        });
+        
+        // 移动端菜单切换
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            menuBtn.innerHTML = mobileMenu.classList.contains('hidden') 
+                ? '<i class="fa fa-bars text-xl"></i>' 
+                : '<i class="fa fa-times text-xl"></i>';
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭菜单
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.innerHTML = '<i class="fa fa-bars text-xl"></i>';
+                    
+                    // 更新导航栏活动状态
+                    document.querySelectorAll('nav a, #mobileMenu a').forEach(navLink => {
+                        navLink.classList.remove('nav-active');
+                    });
+                    this.classList.add('nav-active');
+                }
+            });
+        });
+        
+        // 初始化捐赠统计图表
+        const donationChart = new Chart(
+            document.getElementById('donationChart'),
+            {
+                type: 'bar',
+                data: {
+                    labels: ['9月', '10月', '11月', '12月', '1月', '2月'],
+                    datasets: [{
+                        label: '月度捐赠额 (元)',
+                        data: [0, 0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            'rgba(79, 70, 229, 0.2)',
+                            'rgba(79, 70, 229, 0.2)',
+                            'rgba(79, 70, 229, 0.2)',
+                            'rgba(79, 70, 229, 0.2)',
+                            'rgba(79, 70, 229, 0.2)',
+                            'rgba(79, 70, 229, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(79, 70, 229, 0.5)',
+                            'rgba(79, 70, 229, 0.5)',
+                            'rgba(79, 70, 229, 0.5)',
+                            'rgba(79, 70, 229, 0.5)',
+                            'rgba(79, 70, 229, 0.5)',
+                            'rgba(79, 70, 229, 0.5)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '近6个月捐赠统计'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        );
+        
+        // 捐赠金额选择
+        document.querySelectorAll('.donation-amount').forEach(button => {
+            button.addEventListener('click', function() {
+                // 移除所有按钮的选中状态
+                document.querySelectorAll('.donation-amount').forEach(btn => {
+                    btn.classList.remove('border-primary', 'text-primary');
+                    btn.classList.add('border-gray-200');
+                });
+                
+                // 设置当前按钮为选中状态
+                this.classList.remove('border-gray-200');
+                this.classList.add('border-primary', 'text-primary');
+                
+                // 如果选择"其他"，清空自定义金额输入框
+                if (this.textContent.trim() === '其他') {
+                    document.getElementById('customAmount').value = '';
+                } else {
+                    // 否则，将按钮上的金额填入自定义金额输入框
+                    const amount = this.textContent.trim().replace('¥', '');
+                    document.getElementById('customAmount').value = amount;
+                }
+            });
+        });
+        
+        // 支付方式选择
+        document.querySelectorAll('.payment-method').forEach(button => {
+            button.addEventListener('click', function() {
+                // 移除所有按钮的选中状态
+                document.querySelectorAll('.payment-method').forEach(btn => {
+                    btn.classList.remove('border-primary', 'text-primary');
+                    btn.classList.add('border-gray-200');
+                });
+                
+                // 设置当前按钮为选中状态
+                this.classList.remove('border-gray-200');
+                this.classList.add('border-primary', 'text-primary');
+            });
+        });
+    </script>
+    <!-- AOS库 -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        // 初始化AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out',
+            once: true
+        });
+
+        // 图片懒加载
+        document.addEventListener('DOMContentLoaded', function() {
+            const lazyImages = document.querySelectorAll('img[data-src]');
+            
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            lazyImages.forEach(img => imageObserver.observe(img));
+            
+            // 数字计数器动画
+            const counters = document.querySelectorAll('.counter');
+            const counterObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = parseInt(counter.getAttribute('data-target'));
+                        const duration = 2000; // 动画持续时间（毫秒）
+                        const increment = target / (duration / 16); // 每16ms增加的数值
+                        let current = 0;
+                        
+                        const updateCounter = () => {
+                            current += increment;
+                            if (current < target) {
+                                counter.textContent = Math.ceil(current);
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                counter.textContent = target;
+                                if (target > 100) {
+                                    counter.textContent = target + '+';
+                                } else if (counter.textContent.indexOf('%') === -1 && 
+                                          counter.textContent.indexOf('+') === -1 && 
+                                          parseInt(counter.textContent) >= 0 && 
+                                          parseInt(counter.textContent) <= 100) {
+                                    counter.textContent = target + '%';
+                                }
+                            }
+                        };
+                        
+                        requestAnimationFrame(updateCounter);
+                        observer.unobserve(counter);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => counterObserver.observe(counter));
+        });
+        
+        // 页面加载进度指示器
+        window.addEventListener('load', function() {
+            const loader = document.createElement('div');
+            loader.className = 'fixed inset-0 bg-white z-[9999] flex items-center justify-center transition-opacity duration-500';
+            loader.innerHTML = `
+                <div class="text-center">
+                    <div class="inline-block w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p class="text-gray-600">加载中...</p>
+                </div>
+            `;
+            document.body.prepend(loader);
+            
+            // 延迟一点时间后淡出加载指示器
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                }, 500);
+            }, 500);
+        });
+    </script>
+    <!-- 返回顶部按钮 -->
+    <button id="backToTop" class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 z-50">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // 返回顶部按钮功能
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.remove('opacity-0', 'invisible');
+                backToTopBtn.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopBtn.classList.add('opacity-0', 'invisible');
+                backToTopBtn.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
+    
